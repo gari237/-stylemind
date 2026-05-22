@@ -1,0 +1,67 @@
+{
+  "profil": {
+    "styles": [
+      "casual"
+    ],
+    "couleurs": [
+      "beige"
+    ],
+    "budget_min": 0,
+    "budget_max": 65,
+    "taille": "L",
+    "marques": [
+      "Zara"
+    ],
+    "occasions": [
+      "quotidien"
+    ]
+  },
+  "nb_produits": 6,
+  "meilleur_produit": {
+    "nom": "Pantalon Beige Casual",
+    "prix": "29.99€",
+    "marque": "Zara",
+    "source": "Zara.fr",
+    "score_style": 10,
+    "score_prix": 10,
+    "score_occasion": 10,
+    "score_total": 10.0,
+    "justification": "Le pantalon beige casual de Zara correspond parfaitement au style, aux couleurs, au budget et aux occasions du profil."
+  },
+  "top3": [
+    {
+      "nom": "Pantalon Beige Casual",
+      "prix": "29.99€",
+      "marque": "Zara",
+      "source": "Zara.fr",
+      "score_style": 10,
+      "score_prix": 10,
+      "score_occasion": 10,
+      "score_total": 10.0,
+      "justification": "Le pantalon beige casual de Zara correspond parfaitement au style, aux couleurs, au budget et aux occasions du profil."
+    },
+    {
+      "nom": "Pantalon Casual Beige",
+      "prix": "25.99€",
+      "marque": "Uniqlo",
+      "source": "Uniqlo.com",
+      "score_style": 10,
+      "score_prix": 10,
+      "score_occasion": 10,
+      "score_total": 10.0,
+      "justification": "Le pantalon casual beige correspond parfaitement au style, aux couleurs et aux occasions du profil."
+    },
+    {
+      "nom": "Pantalon Lin Beige",
+      "prix": "39.99€",
+      "marque": "H&M",
+      "source": "HM.com",
+      "score_style": 8,
+      "score_prix": 8,
+      "score_occasion": 8,
+      "score_total": 8.0,
+      "justification": "Le pantalon correspond au style casual et à la couleur beige du profil, est dans le budget et convient pour une occasion quotidienne."
+    }
+  ],
+  "conseil": "Pour un style casual quotidien, je te recommande des pantalons beige confortables. Mon choix principal est le Pantalon Beige Casual à 29,99€, qui offre un excellent rapport qualité-prix et convient parfaitement à ton style casual. Une alternative intéressante est le Pantalon Casual Beige à 25,99€, qui est également très abordable. Pour un look élégant, associe-le à un haut simple et des chaussures décontractées. N'oublie pas que le Pantalon Lin Beige dépasse légèrement ton budget, donc choisissez le premier ou le deuxième pour rester dans tes limites."
+}
