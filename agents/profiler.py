@@ -7,12 +7,13 @@ import json                         # Pour convertir les données en JSON
 import os                           # Pour lire les variables d'environnement
 from groq import Groq               # Pour appeler le LLM
 from dotenv import load_dotenv      # Pour charger le fichier .env
-
+import streamlit as st
 # Charger les variables du fichier .env
 load_dotenv()
 
 # Créer le client Groq avec la clé API
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+client = Groq(api_key=st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY"))
 
 
 # ============================================================
