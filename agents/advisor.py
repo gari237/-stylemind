@@ -6,19 +6,20 @@ import json                         # Pour manipuler les données JSON
 import os                           # Pour les variables d'environnement
 from groq import Groq               # Pour appeler le LLM
 from dotenv import load_dotenv      # Pour charger le fichier .env
+import streamlit as st              # Pour lire les secrets Streamlit
 
 # Charger les variables d'environnement
 load_dotenv()
 
 # Créer le client Groq
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(api_key=st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY"))
 
 
 # ============================================================
 # FONCTION 1 — Générer le conseil final
 # ============================================================
 def generer_conseil(produits_scores, profil):
-    # Prendre uniquement le top 3 pour le prompt (évite les tokens inutiles)
+    # Prendre uniquement le top 3 pour le prompt
     top3 = produits_scores[:3]
 
     # Construire le prompt
@@ -64,11 +65,11 @@ Sois direct, chaleureux, et précis. Maximum 150 mots.
 def generer_resume(produits_scores, profil, conseil):
     # Construire le résumé complet de la session
     resume = {
-        "profil"         : profil,                  # Profil utilisateur
-        "nb_produits"    : len(produits_scores),     # Nombre de produits analysés
-        "meilleur_produit": produits_scores[0],      # Produit #1
-        "top3"           : produits_scores[:3],      # Top 3
-        "conseil"        : conseil                   # Conseil de l'Advisor
+        "profil"          : profil,                 # Profil utilisateur
+        "nb_produits"     : len(produits_scores),   # Nombre de produits analysés
+        "meilleur_produit": produits_scores[0],     # Produit #1
+        "top3"            : produits_scores[:3],    # Top 3
+        "conseil"         : conseil                 # Conseil de l'Advisor
     }
 
     return resume
@@ -93,9 +94,15 @@ def run(produits_scores, profil):
     # Étape 3 — Générer le résumé complet
     resume = generer_resume(produits_scores, profil, conseil)
 
-    # Étape 4 — Sauvegarder le résumé dans un fichier JSON
-    with open("data/derniere_session.json", "w", encoding="utf-8") as f:
-        json.dump(resume, f, indent=2, ensure_ascii=False)    # Écrire le JSON proprement
+    # Étape 4 — Construire le chemin absolu vers data/
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Dossier racine
+    data_dir = os.path.join(base_dir, "data")                               # Dossier data/
+    os.makedirs(data_dir, exist_ok=True)                                    # Créer si inexistant
+    json_path = os.path.join(data_dir, "derniere_session.json")             # Chemin complet
+
+    # Étape 5 — Sauvegarder le résumé dans un fichier JSON
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(resume, f, indent=2, ensure_ascii=False)                  # Écrire le JSON
 
     print("\n💾 Session sauvegardée dans data/derniere_session.json")
 

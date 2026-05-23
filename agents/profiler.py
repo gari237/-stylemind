@@ -20,13 +20,15 @@ client = Groq(api_key=st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY"
 # FONCTION 1 — Créer la base de données
 # ============================================================
 def init_db():
-    # Connexion à SQLite — crée le fichier s'il n'existe pas
-    conn = sqlite3.connect("data/profil.db")
+    # Construire le chemin absolu vers le dossier data
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_dir = os.path.join(base_dir, "data")           # Chemin vers data/
+    os.makedirs(data_dir, exist_ok=True)                # Créer si inexistant
+    db_path = os.path.join(data_dir, "profil.db")       # Chemin complet
 
-    # Curseur pour exécuter des requêtes SQL
+    # Connexion SQLite
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-
-    # Créer la table profil si elle n'existe pas encore
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS profil (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,10 +41,9 @@ def init_db():
             occasions TEXT
         )
     """)
-
-    # Sauvegarder et retourner la connexion
     conn.commit()
     return conn
+    
 
 
 # ============================================================
