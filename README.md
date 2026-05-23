@@ -30,11 +30,16 @@ streamlit run app/app.py
 ## 📁 Structure
 stylemind/
 ├── agents/
-│   ├── profiler.py    # Profil utilisateur + SQLite
-│   ├── scout.py       # Recherche produits
-│   ├── ranker.py      # Scoring LLM
-│   └── advisor.py     # Recommandation finale
+│   
+├── profiler.py    # Profil utilisateur + SQLite
+│  
+├── scout.py       # Recherche produits
+│   
+├── ranker.py      # Scoring LLM
+│   
+└── advisor.py     # Recommandation finale
 ├── app/
-│   └── app.py         # Interface Streamlit
+│   
+└── app.py         # Interface Streamlit
 └── requirements.txt
 
