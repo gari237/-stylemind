@@ -7,12 +7,12 @@ import json                         # Pour convertir les données en JSON
 import os                           # Pour lire les variables d'environnement
 from groq import Groq               # Pour appeler le LLM
 from dotenv import load_dotenv      # Pour charger le fichier .env
-import streamlit as st
+import streamlit as st              # Pour lire les secrets Streamlit
+
 # Charger les variables du fichier .env
 load_dotenv()
 
 # Créer le client Groq avec la clé API
-
 client = Groq(api_key=st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY"))
 
 
@@ -20,15 +20,16 @@ client = Groq(api_key=st.secrets.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY"
 # FONCTION 1 — Créer la base de données
 # ============================================================
 def init_db():
-    # Construire le chemin absolu vers le dossier data
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_dir = os.path.join(base_dir, "data")           # Chemin vers data/
+    # Utiliser /tmp accessible sur Streamlit Cloud et en local
+    data_dir = "/tmp/stylemind_data"                    # Dossier temporaire
     os.makedirs(data_dir, exist_ok=True)                # Créer si inexistant
-    db_path = os.path.join(data_dir, "profil.db")       # Chemin complet
+    db_path = os.path.join(data_dir, "profil.db")       # Chemin complet du fichier DB
 
-    # Connexion SQLite
+    # Connexion à SQLite
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
+
+    # Créer la table profil si elle n'existe pas encore
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS profil (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,13 +42,14 @@ def init_db():
             occasions TEXT
         )
     """)
+
+    # Sauvegarder et retourner la connexion
     conn.commit()
     return conn
-    
 
 
 # ============================================================
-# FONCTION 2 — Poser des questions à l'utilisateur
+# FONCTION 2 — Poser des questions à l'utilisateur (terminal)
 # ============================================================
 def collecter_infos():
     print("\n🎨 Bienvenue dans StyleMind !\n")
@@ -103,21 +105,18 @@ Retourne UNIQUEMENT ce JSON, sans texte autour, sans markdown, sans backticks :
 
     # Appeler Groq avec le modèle actuel
     reponse = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",    # Modèle actuel Groq 2025
+        model="llama-3.3-70b-versatile",    # Modèle actuel Groq
         messages=[{"role": "user", "content": prompt}]
     )
 
     # Extraire le texte brut de la réponse
     texte = reponse.choices[0].message.content
 
-    # Nettoyer le texte — le LLM ajoute parfois des backticks markdown
-    texte = texte.strip()               # Supprimer espaces début/fin
-    texte = texte.replace("```json", "") # Supprimer ```json
-    texte = texte.replace("```", "")     # Supprimer ```
-    texte = texte.strip()               # Nettoyer à nouveau
-
-    # Afficher pour debug — voir ce que le LLM retourne
-    print(f"\n🔍 Réponse LLM : {texte}")
+    # Nettoyer le texte — supprimer les backticks markdown si présents
+    texte = texte.strip()                        # Supprimer espaces début/fin
+    texte = texte.replace("```json", "")         # Supprimer ```json
+    texte = texte.replace("```", "")             # Supprimer ```
+    texte = texte.strip()                        # Nettoyer à nouveau
 
     # Convertir le JSON texte en dictionnaire Python
     profil_structure = json.loads(texte)
@@ -136,13 +135,13 @@ def sauvegarder_profil(conn, profil):
         INSERT INTO profil (styles, couleurs, budget_min, budget_max, taille, marques, occasions)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
-        json.dumps(profil["styles"]),
-        json.dumps(profil["couleurs"]),
-        profil["budget_min"],
-        profil["budget_max"],
-        profil["taille"],
-        json.dumps(profil["marques"]),
-        json.dumps(profil["occasions"])
+        json.dumps(profil["styles"]),       # Convertir liste en texte JSON
+        json.dumps(profil["couleurs"]),     # Convertir liste en texte JSON
+        profil["budget_min"],               # Entier direct
+        profil["budget_max"],               # Entier direct
+        profil["taille"],                   # Texte direct
+        json.dumps(profil["marques"]),      # Convertir liste en texte JSON
+        json.dumps(profil["occasions"])     # Convertir liste en texte JSON
     ))
 
     conn.commit()
@@ -179,7 +178,7 @@ def charger_profil(conn):
 
 
 # ============================================================
-# POINT D'ENTRÉE — Lancer le Profiler Agent
+# POINT D'ENTRÉE — Lancer le Profiler Agent (terminal)
 # ============================================================
 def run():
     # Étape 1 — Initialiser la base
